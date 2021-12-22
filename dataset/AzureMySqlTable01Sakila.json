@@ -1,5 +1,5 @@
 {
-	"name": "AzureMySqlTable01",
+	"name": "AzureMySqlTable01Sakila",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "sakila",

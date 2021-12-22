@@ -83,7 +83,7 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "AzureMySqlTable01",
+									"referenceName": "AzureMySqlTable01Sakila",
 									"type": "DatasetReference",
 									"parameters": {
 										"tableName": {
@@ -95,7 +95,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "Parquet01",
+									"referenceName": "Parquet01Sakila",
 									"type": "DatasetReference",
 									"parameters": {
 										"container": "ingestion",
