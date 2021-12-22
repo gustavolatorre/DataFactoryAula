@@ -1,0 +1,23 @@
+{
+	"name": "MySqlTable01Carloca",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "carloca",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tableName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "MySqlTable",
+		"schema": [],
+		"typeProperties": {
+			"tableName": {
+				"value": "@dataset().tableName",
+				"type": "Expression"
+			}
+		}
+	}
+}
