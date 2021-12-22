@@ -60,7 +60,24 @@
 								"source": {
 									"type": "MySqlSource"
 								},
-								"enableStaging": false
+								"sink": {
+									"type": "ParquetSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "ParquetWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
 							},
 							"inputs": [
 								{
@@ -69,6 +86,23 @@
 									"parameters": {
 										"tableName": {
 											"value": "@item().table_name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Parquet01Carloca",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": "ingestion",
+										"folder": {
+											"value": "@item().table_schema",
+											"type": "Expression"
+										},
+										"file": {
+											"value": "@concat(item().table_name, '.parquet')",
 											"type": "Expression"
 										}
 									}
