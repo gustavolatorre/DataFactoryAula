@@ -226,6 +226,148 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/cliente')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "cliente.parquet",
+						"folderPath": "sakila",
+						"fileSystem": "ingestion"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "cliente_id",
+						"type": "INT32"
+					},
+					{
+						"name": "loja_id",
+						"type": "INT_8"
+					},
+					{
+						"name": "primeiro_nome",
+						"type": "UTF8"
+					},
+					{
+						"name": "ultimo_nome",
+						"type": "UTF8"
+					},
+					{
+						"name": "email",
+						"type": "UTF8"
+					},
+					{
+						"name": "endereco_id",
+						"type": "INT32"
+					},
+					{
+						"name": "ativo",
+						"type": "BOOLEAN"
+					},
+					{
+						"name": "data_criacao",
+						"type": "INT96"
+					},
+					{
+						"name": "ultima_atualizacao",
+						"type": "INT96"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage01')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/aluguel')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "aluguel.parquet",
+						"folderPath": "sakila",
+						"fileSystem": "ingestion"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "aluguel_id",
+						"type": "INT32"
+					},
+					{
+						"name": "data_de_aluguel",
+						"type": "INT96"
+					},
+					{
+						"name": "inventario_id",
+						"type": "INT32"
+					},
+					{
+						"name": "cliente_id",
+						"type": "INT32"
+					},
+					{
+						"name": "data_de_devolucao",
+						"type": "INT96"
+					},
+					{
+						"name": "funcionario_id",
+						"type": "INT_8"
+					},
+					{
+						"name": "ultima_atualizacao",
+						"type": "INT96"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage01')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/aluguelfull')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "organization"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage01')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/IngestionSakilapipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -406,6 +548,52 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "cliente",
+								"type": "DatasetReference"
+							},
+							"name": "cliente"
+						},
+						{
+							"dataset": {
+								"referenceName": "aluguel",
+								"type": "DatasetReference"
+							},
+							"name": "aluguel"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "aluguelfull",
+								"type": "DatasetReference"
+							},
+							"name": "alguelfull"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Join1"
+						}
+					],
+					"script": "source(output(\n\t\tcliente_id as integer,\n\t\tloja_id as byte,\n\t\tprimeiro_nome as string,\n\t\tultimo_nome as string,\n\t\temail as string,\n\t\tendereco_id as integer,\n\t\tativo as boolean,\n\t\tdata_criacao as timestamp,\n\t\tultima_atualizacao as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> cliente\nsource(output(\n\t\taluguel_id as integer,\n\t\tdata_de_aluguel as timestamp,\n\t\tinventario_id as integer,\n\t\tcliente_id as integer,\n\t\tdata_de_devolucao as timestamp,\n\t\tfuncionario_id as byte,\n\t\tultima_atualizacao as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> aluguel\ncliente, aluguel join(cliente@cliente_id == aluguel@cliente_id,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> alguelfull"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/cliente')]",
+				"[concat(variables('factoryId'), '/datasets/aluguel')]",
+				"[concat(variables('factoryId'), '/datasets/aluguelfull')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/IngestionCarlocapipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -534,6 +722,57 @@
 				"[concat(variables('factoryId'), '/datasets/MySqlTableCarlocaLocacao')]",
 				"[concat(variables('factoryId'), '/datasets/MySqlTable01Carloca')]",
 				"[concat(variables('factoryId'), '/datasets/Parquet01Carloca')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipelineDataFlow')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"cliente": {},
+									"aluguel": {},
+									"alguelfull": {}
+								}
+							},
+							"staging": {
+								"folderPath": "organization"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"runConcurrently": false
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
 			]
 		}
 	]
