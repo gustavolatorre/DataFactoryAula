@@ -1,0 +1,19 @@
+{
+	"name": "aluguelfull",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage01",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "organization"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
