@@ -5,13 +5,13 @@
 		"factoryName": {
 			"value": "dfc-aula-governanca-gustavo"
 		},
-		"sakila_connectionString": {
+		"AzureDataLakeStorage01_accountKey": {
 			"value": ""
 		},
 		"carloca_connectionString": {
 			"value": ""
 		},
-		"AzureDataLakeStorage01_accountKey": {
+		"sakila_connectionString": {
 			"value": ""
 		},
 		"AzureDataLakeStorage01_properties_typeProperties_url": {

@@ -7,17 +7,17 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dfc-aula-governanca-gustavo"
 		},
-		"sakila_connectionString": {
+		"AzureDataLakeStorage01_accountKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'sakila'"
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage01'"
 		},
 		"carloca_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'carloca'"
 		},
-		"AzureDataLakeStorage01_accountKey": {
+		"sakila_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage01'"
+			"metadata": "Secure string for 'connectionString' of 'sakila'"
 		},
 		"AzureDataLakeStorage01_properties_typeProperties_url": {
 			"type": "string",
@@ -50,11 +50,11 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"sakila_connectionString": {
-						"value": "[parameters('sakila_connectionString')]"
-					},
 					"AzureDataLakeStorage01_accountKey": {
 						"value": "[parameters('AzureDataLakeStorage01_accountKey')]"
+					},
+					"sakila_connectionString": {
+						"value": "[parameters('sakila_connectionString')]"
 					},
 					"carloca_connectionString": {
 						"value": "[parameters('carloca_connectionString')]"
